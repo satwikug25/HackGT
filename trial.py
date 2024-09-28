@@ -1,5 +1,3 @@
-import getpass
-import os
 from typing import Sequence
 
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -11,10 +9,9 @@ from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
-from typing_extensions import Annotated, TypedDict
-
 from prompter import get_promp_holder
 from retriever import get_retriever
+from typing_extensions import Annotated, TypedDict
 
 llm = ChatOpenAI(model_name="gpt-4o")
 
@@ -95,6 +92,13 @@ print(result["answer"])
 
 result = app.invoke(
     {"input": "What is the computational complexity?"},
+    config=config,
+)
+print(result["answer"])
+
+
+result = app.invoke(
+    {"input": "What is the complexity?"},
     config=config,
 )
 print(result["answer"])
