@@ -1,27 +1,45 @@
-import bs4
-from langchain_community.document_loaders import WebBaseLoader
-from langchain_core.output_parsers import StrOutputParser
+import io
+
+import requests
+from langchain.docstore.document import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.vectorstores import InMemoryVectorStore
-from langchain_openai import OpenAIEmbeddings
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from PIL import Image
+from langchain_openai.embeddings import OpenAIEmbeddings
+from PyPDF2 import PdfReader
+
+
+def fetch_pdf_from_url(url):
+    response = requests.get(url)
+    return io.BytesIO(response.content)
+
+
+def extract_text_from_pdf(pdf_file):
+    pdf_reader = PdfReader(pdf_file)
+    text = ""
+    for page in pdf_reader.pages:
+        text += page.extract_text()
+    return text
 
 
 def get_retriever():
-    # Load and split the PDF text
-    url = "https://web.stanford.edu/class/archive/cs/cs161/cs161.1168/lecture1.pdf"
-    loader = WebBaseLoader(
-        web_paths=(url,),
-        bs_kwargs=dict(
-            parse_only=bs4.SoupStrainer(
-                class_=("post-content", "post-title", "post-header")
-            )
-        ),
-    )
-    docs = loader.load()
+    pdf_url = "https://web.stanford.edu/class/archive/cs/cs161/cs161.1168/lecture1.pdf"
+    pdf_file = fetch_pdf_from_url(pdf_url)
+    text = extract_text_from_pdf(pdf_file)
+
+    # Split the text into chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    splits = text_splitter.split_documents(docs)
-    vectorstore = InMemoryVectorStore(embedding=OpenAIEmbeddings())
-    vectorstore.add_documents(splits)
-    retriever = vectorstore.as_retriever()
-    return retriever
+    chunks = text_splitter.split_text(text)
+
+    # Create documents
+    documents = [
+        Document(page_content=chunk, metadata={"source": pdf_url}) for chunk in chunks
+    ]
+
+    # Initialize the vector store
+    embeddings = OpenAIEmbeddings()  # Make sure to set your OpenAI API key
+    vector_store = InMemoryVectorStore(embedding=embeddings)
+
+    # Add documents to the vector store
+    vector_store.add_documents(documents)
+
+    return vector_store.as_retriever()

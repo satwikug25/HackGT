@@ -98,7 +98,7 @@ print(result["answer"])
 
 
 result = app.invoke(
-    {"input": "What is the complexity?"},
+    {"input": "What is the lemma in the Proof of correctness?"},
     config=config,
 )
 print(result["answer"])
