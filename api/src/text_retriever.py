@@ -5,13 +5,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from PyPDF2 import PdfReader
 
 
-def fetch_pdf_from_url(url):
-    response = requests.get(url)
-    return io.BytesIO(response.content)
-
-
-def extract_text_from_pdf(pdf_file):
-    pdfFileObject = open("Lumbar_Puncture_Surgical_Plan.pdf", "rb")
+def extract_text_from_pdf(file_path):
+    pdfFileObject = open(file_path, "rb")
     pdf_reader = PdfReader(pdfFileObject)
     text = ""
     for page in pdf_reader.pages:
@@ -19,10 +14,8 @@ def extract_text_from_pdf(pdf_file):
     return text
 
 
-def get_chunks():
-    pdf_url = "https://drive.google.com/file/d/1raeUWULDtRkMEDaJyJoSnAX4QNtPqgEE/view?usp=sharing"
-    pdf_file = fetch_pdf_from_url(pdf_url)
-    text = extract_text_from_pdf(pdf_file)
+def get_chunks(file_path):
+    text = extract_text_from_pdf(file_path)
 
     # Split the text into chunks
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)

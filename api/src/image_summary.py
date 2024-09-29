@@ -57,13 +57,10 @@ def generate_img_summaries(path):
 
     # Apply to images
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    for img_file in sorted(os.listdir(path)):
-        if img_file.endswith(".jpg"):
-            img_path = os.path.join(path, img_file)
-            base64_image = encode_image(img_path)
-            img_base64_list.append(base64_image)
-            summary = image_summarize(base64_image, prompt)
-            chunks = text_splitter.split_text(summary)
-            image_summaries.extend(chunks)
+    base64_image = encode_image(path)
+    img_base64_list.append(base64_image)
+    summary = image_summarize(base64_image, prompt)
+    chunks = text_splitter.split_text(summary)
+    image_summaries.extend(chunks)
 
     return img_base64_list, image_summaries
