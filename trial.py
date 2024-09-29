@@ -1,21 +1,29 @@
 from typing import Sequence
 
+from image_summary import generate_img_summaries
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain_chroma import Chroma
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
+from langchain_openai.embeddings import OpenAIEmbeddings
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 from langgraph.graph.message import add_messages
+from multi_retriever import create_multi_vector_retriever
 from prompter import get_promp_holder
-from retriever import get_retriever
+from text_retriever import get_chunks
 from typing_extensions import Annotated, TypedDict
 
 llm = ChatOpenAI(model_name="gpt-4o")
+source = "https://web.stanford.edu/class/archive/cs/cs161/cs161.1168/lecture1.pdf"
 
-retriever = get_retriever()
+vectorstore = Chroma(embedding_function=OpenAIEmbeddings())
+chunks = get_chunks()
+_, image_summaries = generate_img_summaries("images")
+retriever = create_multi_vector_retriever(vectorstore, chunks, source, image_summaries)
 prompt = get_promp_holder()
 history_aware_retriever = create_history_aware_retriever(llm, retriever, prompt)
 
@@ -76,29 +84,29 @@ app = workflow.compile(checkpointer=memory)
 
 config = {"configurable": {"thread_id": "abc123"}}
 
-result = app.invoke(
-    {"input": "What is the first step of insertion sort algorithm?"},
-    config=config,
-)
-print(result["answer"])
+# result = app.invoke(
+#     {"input": "What is the first step of insertion sort algorithm?"},
+#     config=config,
+# )
+# print(result["answer"])
+
+
+# result = app.invoke(
+#     {"input": "What is next step?"},
+#     config=config,
+# )
+# print(result["answer"])
+
+
+# result = app.invoke(
+#     {"input": "What is the computational complexity?"},
+#     config=config,
+# )
+# print(result["answer"])
 
 
 result = app.invoke(
-    {"input": "What is next step?"},
-    config=config,
-)
-print(result["answer"])
-
-
-result = app.invoke(
-    {"input": "What is the computational complexity?"},
-    config=config,
-)
-print(result["answer"])
-
-
-result = app.invoke(
-    {"input": "What is the lemma in the Proof of correctness?"},
+    {"input": "What is the second step of the surgical plan?"},
     config=config,
 )
 print(result["answer"])
