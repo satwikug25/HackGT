@@ -1,0 +1,96 @@
+.login-pg {
+    width: 100%;
+    height: 110vh;
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    padding: 2rem;
+    background-color: #f5f5f5;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem; 
+    width: 100%;
+    align-items: center; 
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.section h1 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-field label {
+    font-size: 1rem;
+    color: #333;
+}
+
+.input-field input {
+    padding: 0.75rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.log-in-btn {
+    padding: 0.75rem;
+    background-color: #023047;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.log-in-btn:hover {
+    background-color: #219ebc;
+}
+
+.sign-in {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.sign-in a {
+    color: #219ebc;
+    text-decoration: none;
+}
+
+.sign-in a:hover {
+    text-decoration: underline;
+}
+
+.sign-image {
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+}
+
+.si-image {
+    max-width: 100%; 
+    height: auto; 
+    transform: scale(1); 
+}
