@@ -88,7 +88,7 @@ def AddPatientInfo():
 
         # Insert into MongoDB
         patient_data = {
-            'email': request.get_json.get('email'),
+            'email': request.form.get('email'),
             'pdf_file_path': pdf_path,
             'medical_image_path': image_path
         }
@@ -98,24 +98,34 @@ def AddPatientInfo():
         return jsonify({"message": "Patient info and files uploaded successfully!"}), 201
 
     elif request.method == 'GET':
-        email = request.get_json.get('email')
+        email = request.args.get('email')
 
-        if patient_collection.find_one({"email":email}):
-            plan = get_plan(image_path,pdf_path) #returns an list or checklists
+        if not email:
+            return jsonify({"message": "Email parameter is missing!"}), 400
 
-            body = {
-                "email": email,
-                "checklists": plan
-            }
+        patient = patient_collection.find_one({"email": email})
 
-            checklist.insert_one(body)
+        if not patient:
+            return jsonify({"message": "Patient not found!"}), 404
 
-            str = ""
-            for idx,ch in enumerate(plan):
-                str += (idx+1) + "." + ch.title + ": " + ch.description + "\n"
+        # Assuming get_plan() is your custom function that generates the plan
+        plan = get_plan(patient['medical_image_path'], patient['pdf_file_path'])
 
+        body = {
+            "email": email,
+            "checklists": plan
+        }
 
-            return str
+        checklist.insert_one(body)
+
+        plan_str = ""
+        for idx,ch in enumerate(plan):
+                plan_str += str((idx+1)) + "." + ch["title"] + ": " + ch["description"] + "\n"
+
+        return jsonify({"checklists": plan, "plan_str": plan_str}), 200
+
+    # Add a return in case of unsupported method types
+    return jsonify({"message": "Invalid method"}), 405
 
 
 
