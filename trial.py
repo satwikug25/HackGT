@@ -1,3 +1,4 @@
+import ast
 from typing import Sequence
 
 from image_summary import generate_img_summaries
@@ -106,7 +107,18 @@ config = {"configurable": {"thread_id": "abc123"}}
 
 
 result = app.invoke(
-    {"input": "What is the second step of the surgical plan?"},
+    {
+        "input": "What are the steps of the surgical plan? Give it in a list of dictionaries format, with two keys, title and description, with the title being the key part of the step, and the description having any additional details. The output should be parseable by the ast literal_eval command. Give me a single line output without a newline "
+    },
     config=config,
 )
-print(result["answer"])
+print(result["answer"][:100])
+
+
+ans = result["answer"]
+
+
+l = ast.literal_eval(ans)
+
+print(type(l))
+print(l[0])
