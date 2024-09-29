@@ -17,13 +17,14 @@ from multi_retriever import create_multi_vector_retriever
 from prompter import get_promp_holder
 from text_retriever import get_chunks
 from typing_extensions import Annotated, TypedDict
+from dotenv import dotenv_values
 
 
 def get_plan(image_path,file_path):
+    config = dotenv_values("../.env")
+    llm = ChatOpenAI(model_name="gpt-4o",api_key=config["openai_key"])
 
-    llm = ChatOpenAI(model_name="gpt-4o",api_key="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")
-
-    vectorstore = Chroma(embedding_function=OpenAIEmbeddings(api_key="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"))
+    vectorstore = Chroma(embedding_function=OpenAIEmbeddings(api_key=config["openai_key"]))
     chunks = get_chunks(file_path)
     _, image_summaries = generate_img_summaries(image_path)
     retriever = create_multi_vector_retriever(vectorstore, chunks, file_path, image_summaries)

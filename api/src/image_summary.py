@@ -1,10 +1,8 @@
 import base64
-import os
-
+from dotenv import dotenv_values
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-
 
 def encode_image(image_path):
     """Getting the base64 string"""
@@ -14,7 +12,8 @@ def encode_image(image_path):
 
 def image_summarize(img_base64, prompt):
     """Make image summary"""
-    chat = ChatOpenAI(model_name="gpt-4o",api_key="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")
+    config = dotenv_values("../.env")
+    chat = ChatOpenAI(model_name="gpt-4o",api_key=config["openai_key"])
 
     msg = chat.invoke(
         [
